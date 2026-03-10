@@ -1,17 +1,49 @@
 const express = require('express');
 const cors = require('cors');
 const db = require('./db');
+const path = require('path');
+const multer = require('multer');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Ensure uploads directory exists
+const uploadsDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir);
+}
+
+// Multer storage config
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, uploadsDir);
+  },
+  filename: (req, file, cb) => {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // Helper to update updated_at
 const updateSnippetDate = (id) => {
   db.prepare('UPDATE snippets SET updated_at = CURRENT_TIMESTAMP WHERE id = ?').run(id);
 };
+
+// Image Upload Endpoint
+app.post('/api/upload', upload.single('image'), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: 'No image file provided' });
+  }
+  const imageUrl = `/uploads/${req.file.filename}`;
+  res.json({ url: imageUrl });
+});
 
 // API Routes
 
@@ -55,19 +87,19 @@ app.get('/api/snippets/:id', (req, res) => {
 
 // POST Create snippet
 app.post('/api/snippets', (req, res) => {
-  const { title, description, category, tags, html_code, css_code, js_code } = req.body;
+  const { title, description, category, tags, html_code, css_code, js_code, screenshot_url } = req.body;
   
   if (!title || !category) {
     return res.status(400).json({ error: 'Title and category are required' });
   }
 
   const query = `
-    INSERT INTO snippets (title, description, category, tags, html_code, css_code, js_code)
-    VALUES (?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO snippets (title, description, category, tags, html_code, css_code, js_code, screenshot_url)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
   try {
-    const info = db.prepare(query).run(title, description, category, tags, html_code, css_code, js_code);
+    const info = db.prepare(query).run(title, description, category, tags, html_code, css_code, js_code, screenshot_url);
     res.status(201).json({ id: info.lastInsertRowid });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -76,17 +108,17 @@ app.post('/api/snippets', (req, res) => {
 
 // PUT Update snippet
 app.put('/api/snippets/:id', (req, res) => {
-  const { title, description, category, tags, html_code, css_code, js_code } = req.body;
+  const { title, description, category, tags, html_code, css_code, js_code, screenshot_url } = req.body;
   const { id } = req.params;
 
   const query = `
     UPDATE snippets 
-    SET title = ?, description = ?, category = ?, tags = ?, html_code = ?, css_code = ?, js_code = ?, updated_at = CURRENT_TIMESTAMP
+    SET title = ?, description = ?, category = ?, tags = ?, html_code = ?, css_code = ?, js_code = ?, screenshot_url = ?, updated_at = CURRENT_TIMESTAMP
     WHERE id = ?
   `;
 
   try {
-    const info = db.prepare(query).run(title, description, category, tags, html_code, css_code, js_code, id);
+    const info = db.prepare(query).run(title, description, category, tags, html_code, css_code, js_code, screenshot_url, id);
     if (info.changes === 0) return res.status(404).json({ error: 'Snippet not found' });
     res.json({ success: true });
   } catch (err) {

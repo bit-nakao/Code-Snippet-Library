@@ -15,6 +15,7 @@ db.exec(`
     html_code TEXT,
     css_code TEXT,
     js_code TEXT,
+    screenshot_url TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
   );
