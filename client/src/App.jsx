@@ -159,31 +159,35 @@ function App() {
             </div>
           )}
 
-          {view === 'create' && (
-            <SnippetForm 
-              onSubmit={handleCreateSnippet} 
-              onCancel={() => setView('list')} 
-              API_BASE={API_BASE}
-            />
-          )}
+          {(view === 'create' || view === 'edit' || view === 'detail') && (
+            <div className="flex-1 overflow-y-auto custom-scrollbar">
+              {view === 'create' && (
+                <SnippetForm 
+                  onSubmit={handleCreateSnippet} 
+                  onCancel={() => setView('list')} 
+                  API_BASE={API_BASE}
+                />
+              )}
 
-          {view === 'edit' && (
-            <SnippetForm 
-              snippet={selectedSnippet}
-              onSubmit={handleUpdateSnippet} 
-              onCancel={() => setView('list')} 
-              API_BASE={API_BASE}
-            />
-          )}
+              {view === 'edit' && (
+                <SnippetForm 
+                  snippet={selectedSnippet}
+                  onSubmit={handleUpdateSnippet} 
+                  onCancel={() => setView('list')} 
+                  API_BASE={API_BASE}
+                />
+              )}
 
-          {view === 'detail' && selectedSnippet && (
-            <SnippetDetail 
-              snippet={selectedSnippet}
-              onBack={() => setView('list')}
-              API_BASE={API_BASE}
-              onExportVSCode={() => handleExportVSCode(selectedSnippet)}
-              onUpdate={(updated) => setSelectedSnippet(updated)}
-            />
+              {view === 'detail' && selectedSnippet && (
+                <SnippetDetail 
+                  snippet={selectedSnippet}
+                  onBack={() => setView('list')}
+                  API_BASE={API_BASE}
+                  onExportVSCode={() => handleExportVSCode(selectedSnippet)}
+                  onUpdate={(updated) => setSelectedSnippet(updated)}
+                />
+              )}
+            </div>
           )}
         </div>
       </main>

@@ -106,10 +106,12 @@ export default function SnippetDetail({ snippet, onBack, API_BASE, onExportVSCod
 
   return (
     <div className="max-w-7xl mx-auto py-10 px-8">
-      <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-[#00D1B2] transition-colors mb-10 font-bold group">
-        <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
-        スニペット一覧に戻る
-      </button>
+      <div className="sticky top-0 z-20 bg-[#F5F7FA]/90 backdrop-blur-sm -mx-8 px-8 py-4 mb-6">
+        <button onClick={onBack} className="flex items-center gap-2 text-slate-400 hover:text-[#00D1B2] transition-colors font-bold group">
+          <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
+          スニペット一覧に戻る
+        </button>
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-12 items-start">
         <div className="flex-1 space-y-6">
