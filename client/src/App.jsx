@@ -204,12 +204,18 @@ function App() {
 
       {/* VSCode Export Modal */}
       {isExportModalOpen && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-[100] p-6 animate-in fade-in duration-300">
-          <div className="bg-white rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl scale-in duration-300">
-            <div className="p-10 border-b border-slate-50 flex justify-between items-center">
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-start justify-center pt-10 z-[100] backdrop-blur-sm p-4 overflow-hidden"
+          onClick={() => setIsExportModalOpen(false)}
+        >
+          <div 
+            className="bg-white rounded-[32px] w-full max-w-3xl max-h-[80vh] overflow-hidden shadow-2xl flex flex-col"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-8 border-b border-slate-50 flex justify-between items-center bg-slate-50/50">
               <div>
                 <h3 className="text-2xl font-black text-[#2A2A2A] tracking-tight">VSCode Snippet JSON</h3>
-                <p className="text-slate-400 text-sm mt-1">settings.json または snippets ファイルに貼り付けてください。</p>
+                <p className="text-slate-400 text-sm mt-1">snippets ファイルに貼り付けて使用してください。</p>
               </div>
               <button 
                 onClick={() => setIsExportModalOpen(false)}
@@ -218,12 +224,14 @@ function App() {
                 <X size={24} className="text-slate-300" />
               </button>
             </div>
-            <div className="p-10 bg-[#2A2A2A]">
-              <pre className="text-indigo-300 font-mono text-sm overflow-x-auto p-6 bg-black/20 rounded-2xl custom-scrollbar leading-relaxed">
+            
+            <div className="p-8 overflow-y-auto max-h-[70vh] custom-scrollbar bg-[#2A2A2A]">
+              <pre className="text-indigo-300 font-mono text-sm overflow-x-auto p-6 bg-black/20 rounded-2xl leading-relaxed">
                 {JSON.stringify(vscodeSnippet, null, 2)}
               </pre>
             </div>
-            <div className="p-8 flex justify-center bg-slate-50/50">
+
+            <div className="p-8 flex justify-center bg-slate-50/50 border-t border-slate-50">
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(JSON.stringify(vscodeSnippet, null, 2));
