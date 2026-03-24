@@ -57,12 +57,29 @@ export default function SnippetForm({ snippet, onSubmit, onCancel, API_BASE }) {
 
   const uploadImage = async (file) => {
     setIsUploading(true);
-    const data = new FormData();
-    data.append('image', file);
     
     try {
+      // 1. Convert file to Base64
+      const base64Data = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+      });
+
+      // 2. Send JSON instead of FormData to bypass Vercel Serverless limitations with multipart/form-data
+      const payload = {
+        image: base64Data,
+        filename: file.name,
+        contentType: file.type
+      };
+
       const BASE_URL = API_BASE.replace('/api', '');
-      const res = await axios.post(`${BASE_URL}/api/upload`, data);
+      const res = await axios.post(`${BASE_URL}/api/upload`, payload, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       setFormData(prev => ({ ...prev, screenshot_url: res.data.url }));
     } catch (err) {
       console.error('Upload failed:', err);

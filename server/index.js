@@ -9,27 +9,34 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
-app.use(express.json());
+// Parse JSON bodies with a larger limit for Base64 images
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ limit: '10mb', extended: true }));
 
-// Multer memory storage (メモリ上でファイルを処理してSupabase Storageにアップロードする)
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-
-// Image Upload Endpoint
-app.post('/api/upload', upload.single('image'), async (req, res) => {
-  if (!req.file) {
-    return res.status(400).json({ error: 'No image file provided' });
-  }
-
-  const fileExt = path.extname(req.file.originalname);
-  const fileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${fileExt}`;
-  
+// Image Upload Endpoint (Base64 JSON)
+app.post('/api/upload', async (req, res) => {
   try {
+    const { image, filename, contentType } = req.body;
+    if (!image) {
+      return res.status(400).json({ error: 'No image data provided' });
+    }
+
+    // image is a Data URL like "data:image/png;base64,iVBORw0KGgo..."
+    const base64Data = image.includes(',') ? image.split(',')[1] : image;
+    if (!base64Data) {
+      return res.status(400).json({ error: 'Invalid or missing base64 image data' });
+    }
+
+    const buffer = Buffer.from(base64Data, 'base64');
+    const fileExt = path.extname(filename || '.png');
+    const newFileName = `${Date.now()}-${Math.round(Math.random() * 1E9)}${fileExt}`;
+    
+    // Upload to Supabase Storage
     const { data, error } = await supabase
       .storage
       .from('snippets')
-      .upload(fileName, req.file.buffer, {
-        contentType: req.file.mimetype
+      .upload(newFileName, buffer, {
+        contentType: contentType || 'image/png'
       });
 
     if (error) throw error;
@@ -38,7 +45,7 @@ app.post('/api/upload', upload.single('image'), async (req, res) => {
     const { data: { publicUrl } } = supabase
       .storage
       .from('snippets')
-      .getPublicUrl(fileName);
+      .getPublicUrl(newFileName);
 
     res.json({ url: publicUrl });
   } catch (err) {
