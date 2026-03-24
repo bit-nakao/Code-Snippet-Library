@@ -34,7 +34,7 @@ export default function SnippetCard({ snippet, onView, onEdit, onDelete }) {
       <div className="aspect-video bg-slate-100 relative overflow-hidden">
         {snippet.screenshot_url ? (
           <img 
-            src={`http://localhost:5000${snippet.screenshot_url}`} 
+            src={snippet.screenshot_url?.startsWith('http') ? snippet.screenshot_url : `http://localhost:5000${snippet.screenshot_url}`} 
             alt={snippet.title} 
             className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           />

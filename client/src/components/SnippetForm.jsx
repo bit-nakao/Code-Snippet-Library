@@ -177,7 +177,7 @@ export default function SnippetForm({ snippet, onSubmit, onCancel, API_BASE }) {
               {formData.screenshot_url ? (
                 <>
                   <img 
-                    src={formData.screenshot_url.startsWith('http') ? formData.screenshot_url : `http://localhost:5000${formData.screenshot_url}`} 
+                    src={formData.screenshot_url?.startsWith('http') ? formData.screenshot_url : `http://localhost:5000${formData.screenshot_url}`} 
                     className="w-full h-full object-cover" 
                     alt="Preview" 
                   />
