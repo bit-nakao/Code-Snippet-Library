@@ -179,13 +179,30 @@ app.get('/api/snippets/export/vscode/:id', async (req, res) => {
       throw error;
     }
 
-    const vscodeSnippet = {
-      [snippet.title]: {
-        "prefix": snippet.title.toLowerCase().replace(/\s+/g, '-'),
-        "body": (snippet.html_code || '').split('\n'),
-        "description": snippet.description || snippet.title
-      }
-    };
+    const prefixBase = snippet.title.toLowerCase().replace(/\s+/g, '-');
+    const vscodeSnippet = {};
+
+    if (snippet.html_code) {
+      vscodeSnippet[`${snippet.title} (HTML)`] = {
+        "prefix": `${prefixBase}-html`,
+        "body": snippet.html_code.split('\n'),
+        "description": `HTML: ${snippet.description || snippet.title}`
+      };
+    }
+    if (snippet.css_code) {
+      vscodeSnippet[`${snippet.title} (CSS)`] = {
+        "prefix": `${prefixBase}-css`,
+        "body": snippet.css_code.split('\n'),
+        "description": `CSS: ${snippet.description || snippet.title}`
+      };
+    }
+    if (snippet.js_code) {
+      vscodeSnippet[`${snippet.title} (JS)`] = {
+        "prefix": `${prefixBase}-js`,
+        "body": (snippet.js_code || '').split('\n'),
+        "description": `JS: ${snippet.description || snippet.title}`
+      };
+    }
 
     res.json(vscodeSnippet);
   } catch (err) {
