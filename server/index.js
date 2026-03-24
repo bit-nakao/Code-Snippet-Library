@@ -187,6 +187,11 @@ app.get('/api/snippets/export/vscode/:id', async (req, res) => {
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-});
+if (process.env.NODE_ENV !== 'production' && require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+// Vercel Serverless Functionsのためにappをエクスポートする
+module.exports = app;
