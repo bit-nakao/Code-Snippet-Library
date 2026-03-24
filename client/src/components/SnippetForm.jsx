@@ -83,7 +83,8 @@ export default function SnippetForm({ snippet, onSubmit, onCancel, API_BASE }) {
       setFormData(prev => ({ ...prev, screenshot_url: res.data.url }));
     } catch (err) {
       console.error('Upload failed:', err);
-      alert('画像のアップロードに失敗しました。');
+      const errMsg = err.response?.data?.error || err.message;
+      alert(`画像のアップロードに失敗しました。\nエラー詳細: ${errMsg}`);
     } finally {
       setIsUploading(false);
     }

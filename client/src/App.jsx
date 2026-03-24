@@ -50,6 +50,7 @@ function App() {
       setView('list');
     } catch (err) {
       console.error('Create error:', err);
+      alert('スニペット登録エラー: ' + (err.response?.data?.error || err.message));
     }
   };
 
@@ -61,6 +62,7 @@ function App() {
       setSelectedSnippet(null);
     } catch (err) {
       console.error('Update error:', err);
+      alert('スニペット更新エラー: ' + (err.response?.data?.error || err.message));
     }
   };
 
