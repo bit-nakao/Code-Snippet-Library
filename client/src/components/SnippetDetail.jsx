@@ -14,7 +14,7 @@ import {
   Camera
 } from 'lucide-react';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
-import { shadesOfPurple } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import html2canvas from 'html2canvas';
 import axios from 'axios';
 
@@ -202,8 +202,8 @@ export default function SnippetDetail({ snippet, onBack, API_BASE, onExportVSCod
             <div className="p-0 bg-[#2A2A2A] h-full overflow-hidden">
                <SyntaxHighlighter
                 language={activeTab}
-                style={shadesOfPurple}
-                customStyle={{ margin: 0, padding: '40px', fontSize: '15px', lineHeight: '1.8', height: '600px', backgroundColor: '#2A2A2A' }}
+                style={vscDarkPlus}
+                customStyle={{ margin: 0, padding: '40px', fontSize: '15px', lineHeight: '1.8', height: '600px', backgroundColor: '#1E1E1E' }}
                 className="custom-scrollbar"
               >
                 {snippet[`${activeTab}_code`] || '// コードがありません'}
